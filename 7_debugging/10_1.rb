@@ -1,3 +1,5 @@
+require 'pry-byebug'
+
 class AuthenticationError < Exception; end
 
 # A mock search engine
@@ -19,7 +21,7 @@ class SearchEngine
 end
 
 module DoesItRock
-  API_KEY = 'LS1A'
+  API_KEY = 'xdd'
 
   class NoScore; end
 
@@ -28,9 +30,11 @@ module DoesItRock
       positive = SearchEngine.count(%{"#{term} rocks"}, API_KEY)
       negative = SearchEngine.count(%{"#{term} is not fun"}, API_KEY)
 
-      (positive * 100) / (positive + negative)
-    rescue Exception
-      NoScore
+      score = (positive * 100) / (positive + negative)
+      score.nil? ? NoScore.new : score
+
+    rescue ZeroDivisionError
+      NoScore.new
     end
   end
 
